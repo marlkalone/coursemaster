@@ -10,7 +10,7 @@ Este projeto consiste em um sistema de gerenciamento de cursos, permitindo:
 
 ---
 
-## Índice
+# Índice
 
 1. [Requisitos de Ambiente](#requisitos-de-ambiente)  
 2. [Instruções para Execução](#instruções-para-execução)  
@@ -32,7 +32,7 @@ Este projeto consiste em um sistema de gerenciamento de cursos, permitindo:
 
 ---
 
-## Requisitos de Ambiente
+# 📋 Requisitos de Ambiente
 
 - **Node.js** v18+  
 - **npm** ou **yarn**  
@@ -41,34 +41,38 @@ Este projeto consiste em um sistema de gerenciamento de cursos, permitindo:
 
 ---
 
-## Instruções para Execução
+# 🔧 Instruções para Execução
 
-### Execução via Docker Compose
+## Execução via Docker Compose
 
 Caso queira rodar tudo (banco de dados e API) via contêineres Docker:
 
-1. **Instale** Docker e docker-compose em sua máquina (caso ainda não tenha).
-2. No diretório do projeto, rode:
-   ```bash
-   docker-compose up --build
-   ```
+  ### **1**. Instale Docker e docker-compose em sua máquina (caso ainda não tenha).
 
-Isso fará o build da imagem da API (usando o Dockerfile presente) e subirá dois contêineres:
-- db (baseado em postgres:15)
-- api (nossa aplicação NestJS)
-3. A aplicação NestJS, por padrão, ficará disponível em http://localhost:3000.
-4. Para parar a execução:
-```bash
-docker-compose down
-```
+  ### **2**. No diretório do projeto, rode:
+  ```bash
+  docker-compose up --build
+  ```
+
+  Isso fará o build da imagem da API (usando o Dockerfile presente) e subirá dois contêineres:
+  - db (baseado em postgres:15)
+  - api (nossa aplicação NestJS)
+  ### **3**. A aplicação NestJS, por padrão, ficará disponível em http://localhost:3000.
+  ### **4**. Para parar a execução:
+  ```bash
+  docker-compose down
+  ```
 
 ### Observação:
-No docker-compose.yml, a variável de ambiente DATABASE_URL já foi configurada como postgresql://admin:admin@db:5432/coursemaster.
+No docker-compose.yml, a variável de ambiente DATABASE_URL já foi configurada como: 
+```bash
+postgresql://admin:admin@db:5432/coursemaster.
+```
 O serviço db mapeia a porta 5432 local para 5432 do contêiner, e a api mapeia 3000 local para 3000 do contêiner.
 
 ---
 
-### Configuração Manual do Banco de Dados (Sem Docker Compose)
+## Configuração Manual do Banco de Dados (Sem Docker Compose)
 Se você não quiser usar Docker Compose e preferir configurar o PostgreSQL por conta própria:
 
 1. Crie um banco de dados no PostgreSQL (por exemplo, **coursemaster**).
@@ -90,20 +94,21 @@ ou
 yarn install
 ```
 
-### Executando o Projeto (Manual)
-1. Configurar .env
+## Executando o Projeto (Manual)
+**1. Configurar .env**
+
 Crie um arquivo .env na raiz contendo, no mínimo:
 ```bash
-DATABASE_URL="postgresql://admin:admin@localhost:5432/coursemaster"
+DATABASE_URL="postgresql://<seu-usuario>:<sua-senha>@localhost:5432/<nome-do-banco>"
 ```
 
-2. Executar Migrations
+**2. Executar Migrations**
 ```bash
-npx prisma migrate dev --name init
+npx prisma migrate dev --name "init"
 ```
 Isso cria (ou atualiza) as tabelas no banco de dados.
 
-3. Rodar a aplicação
+**3. Rodar a aplicação**
 
 Modo desenvolvimento (com live reload):
 ```bash
@@ -117,7 +122,7 @@ npm run start:prod
 
 A API estará acessível (por padrão) em http://localhost:3000.
 
-## Rodando Testes
+## ⚙️ Rodando Testes
 Para rodar todos os testes unitários, use:
 
 ```bash
@@ -129,7 +134,7 @@ Você também pode rodar um teste específico passando o caminho:
 npm run test user.service.spec.ts
 ```
 
-## Estrutura de Pastas
+## 📦 Estrutura de Pastas
 ```
 .
 ├── src
@@ -170,8 +175,14 @@ npm run test user.service.spec.ts
 É possível enviar o cabeçalho timezone (por exemplo, "America/Sao_Paulo") para ajustar as datas retornadas.
 
 ### **POST /users**
-Descrição: Cria um novo usuário com nome, email, senha e registra o horário de criação.
-Body:
+#### **Descrição: Cria um novo usuário com nome, email, senha e registra o horário de criação.**
+
+**Exemplo de requisição:**
+```json
+Headers: { "timezone": "America/Sao_Paulo" }
+```
+
+**Body:**
 ```json
 {
   "name": "Karl Malone",
@@ -182,14 +193,18 @@ Body:
 **Exemplo de Resposta (201 Created):**
 ```json
 {
-  "usuario": 1,
-  "email": "karl@example.com",
-  "criado_em": "2025-01-16T09:40:18-03:00"
+    "message": "Operação realizada com sucesso.",
+    "statusCode": 201,
+    "data": {
+        "usuario": 1,
+        "email": "karl@gmail.com",
+        "criado_em": "2025-01-16T15:03:30-03:00"
+    }
 }
 ```
 
 ### **GET /users**
-Descrição: Retorna todos os usuários cadastrados, com datas ajustadas ao fuso horário.
+Descrição: Retorna o usuário, com datas ajustadas ao fuso horário.
 
 Exemplo de requisição:
 ```bash
@@ -318,22 +333,22 @@ Headers: { "x-timezone-offset": "180" }
   }
 ]
 ```
-## **Escolhas Técnicas**
-1. ### **NestJS**
+## 🛠️ **Escolhas Técnicas**
+### 1. **NestJS**
 - Escolhido por sua arquitetura modular, injeção de dependências integrada e facilidade de organização de código.
-2. ### **Prisma**
+### 2. **Prisma**
 - Para ORM e migrações de banco de dados.
 - Otimiza o desenvolvimento e facilita a manutenção do schema do PostgreSQL.
-3. ### **PostgreSQL**
+### 3. **PostgreSQL**
 - Banco de dados SQL robusto, open-source, bem suportado.
 - Suporta recursos avançados e integra-se bem com o Prisma.
 - Sugerido pelo teste técnico
-4. ### **Estrutura de Projeto*
+### 4. **Estrutura de Projeto**
 - src/core contendo módulos principais (users, courses, enrollment).
 - src/prisma contendo PrismaService.
 - src/utils para funções de utilidade, como manipulação de datas.
 - Testes unitários próximos aos módulos correspondentes.
-5. ### **Testes Unitários**
+### 5. **Testes Unitários**
 - Utilização de Jest para testes.
 - Mocks do PrismaService para evitar dependência de banco real.
 - Cobertura dos principais fluxos (criar usuário, criar curso, criar matrícula, buscas etc.).

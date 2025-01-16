@@ -30,19 +30,6 @@ export class UserController {
 
   }
 
-  @ApiOperation({summary: 'Rota para obter todos os usuários'})
-  @Get()
-  async findAll(
-    @Headers('timezone') clientTimeZone: string,
-  ) {
-
-    if (!clientTimeZone) {
-      clientTimeZone = 'America/Sao_Paulo';
-    }
-
-    return await this.userService.findAll(clientTimeZone);
-  }
-
   @ApiOperation({summary: 'Rota para obter um usuário pelo id'})
   @Get(':id')
   async findOne(

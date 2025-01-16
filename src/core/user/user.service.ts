@@ -54,15 +54,6 @@ export class UserService {
     return user;
   }
 
-  async findAll(clientTimeZone: string) {
-    const users = await this.prisma.user.findMany() as User[];
-
-    return users.map((user) => ({
-      ...user,
-      created_at: convertDateToTimeZone(user.created_at, clientTimeZone),
-    }));
-  }
-
   private async hashPassword(password: string): Promise<string>{
     return await bcrypt.hash(password, 10)
   }
