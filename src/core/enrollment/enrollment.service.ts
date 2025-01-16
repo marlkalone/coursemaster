@@ -37,7 +37,7 @@ export class EnrollmentService {
     return enrollment;
   }
 
-  async findByUser(userId: number, clientTimeZone: string): Promise<UserEnrollments[]> {
+  async findByUser(userId: number, clientTimeZone: string): Promise<UserEnrollments[] | {}> {
 
     const enrollmentsdb = await this.prisma.user.findMany({
       include: { 
@@ -48,6 +48,11 @@ export class EnrollmentService {
         } 
       },
       where: { id: userId },
+    });
+
+    const enrollmentsdb2 = await this.prisma.enrollment.findMany({
+      where: { id: userId },
+      include: { course: true }
     });
 
     const enrollments = enrollmentsdb.map((user) => {
@@ -75,6 +80,6 @@ export class EnrollmentService {
       };
     });
 
-    return enrollments;
+    return enrollmentsdb2;
   }
 }

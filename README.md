@@ -192,11 +192,11 @@ Body:
 Descrição: Retorna todos os usuários cadastrados, com datas ajustadas ao fuso horário.
 
 Exemplo de requisição:
-```json
+```bash
 GET /users/1
 Headers: { "timezone": "America/Sao_Paulo" }
 ```
-Exemplo de Resposta (200 OK):
+**Exemplo de Resposta (200 OK):**
 ```json
 [
   {
@@ -205,6 +205,135 @@ Exemplo de Resposta (200 OK):
     "email": "karl@example.com",
     "password": "$2b$10$...",
     "created_at": "2025-01-16T09:40:18-03:00"
+  },
+    {
+    "id": 2,
+    "name": "Karl Malone Novo",
+    "email": "karl1@example.com",
+    "password": "$2b$10$...",
+    "created_at": "2025-01-16T11:40:18-03:00"
   }
 ]
 ```
+
+### **POST /courses**
+Descrição: Cria um novo curso com título, descrição, horas e registra o horário de criação.
+**Body (JSON):**
+```json
+{
+  "title": "Node.js Avançado",
+  "description": "Tópicos avançados de Node",
+  "hours": 60
+}
+```
+
+**Exemplo de Resposta (201 Created):**
+```json
+{
+  "id": 2,
+  "title": "Node.js Avançado",
+  "description": "Tópicos avançados de Node",
+  "hours": 60,
+  "created_at": "2025-01-16T09:40:18-03:00"
+}
+```
+
+#### **GET /api/courses**
+Lista todos os cursos.
+
+**Exemplo de requisição:**
+```bash
+GET /courses
+Headers: { "timezone": "America/Sao_Paulo" }
+```
+
+**Exemplo de Resposta:**
+```json
+[
+  {
+    "id": 2,
+    "title": "Node.js Avançado",
+    "description": "Tópicos avançados de Node",
+    "hours": 60,
+    "created_at": "2025-01-16T09:40:18-03:00"
+  }
+]
+```
+
+#### **POST /api/enrollments**
+Matricula um usuário em um curso.
+
+**Exemplo de Requisição:**
+```json
+{
+  "user_id": 1,
+  "course_id": 2
+}
+
+```
+
+**Exemplo de Resposta:**
+```json
+{
+  "id": 10,
+  "user_id": 1,
+  "course_id": 2,
+  "enrolled_at": "2025-01-16T09:50:00-03:00"
+}
+```
+
+#### **GET /api/enrollments/:userId**
+Lista os cursos de um usuário, ajustando as datas de matrícula para o fuso horário do cliente.
+
+**Exemplo de Requisição:**
+```bash
+GET /api/enrollments/1
+Headers: { "x-timezone-offset": "180" }
+```
+
+**Exemplo de Resposta:**
+```json
+[
+  {
+    "id": 1,
+    "name": "Karl Malone",
+    "email": "karl@example.com",
+    "password": "...",
+    "created_at": "2025-01-16T09:40:18-03:00",
+    "enrollments": [
+      {
+        "id": 10,
+        "user_id": 1,
+        "course_id": 2,
+        "enrolled_at": "2025-01-16T09:55:23-03:00",
+        "course": {
+          "id": 2,
+          "title": "Node.js Avançado",
+          "description": "Tópicos avançados de Node",
+          "hours": 60,
+          "created_at": "2025-01-16T09:40:18-03:00"
+        }
+      }
+    ]
+  }
+]
+```
+## **Escolhas Técnicas**
+1. ### **NestJS**
+- Escolhido por sua arquitetura modular, injeção de dependências integrada e facilidade de organização de código.
+2. ### **Prisma**
+- Para ORM e migrações de banco de dados.
+- Otimiza o desenvolvimento e facilita a manutenção do schema do PostgreSQL.
+3. ### **PostgreSQL**
+- Banco de dados SQL robusto, open-source, bem suportado.
+- Suporta recursos avançados e integra-se bem com o Prisma.
+- Sugerido pelo teste técnico
+4. ### **Estrutura de Projeto*
+- src/core contendo módulos principais (users, courses, enrollment).
+- src/prisma contendo PrismaService.
+- src/utils para funções de utilidade, como manipulação de datas.
+- Testes unitários próximos aos módulos correspondentes.
+5. ### **Testes Unitários**
+- Utilização de Jest para testes.
+- Mocks do PrismaService para evitar dependência de banco real.
+- Cobertura dos principais fluxos (criar usuário, criar curso, criar matrícula, buscas etc.).
