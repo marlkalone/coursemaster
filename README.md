@@ -210,6 +210,9 @@ docker-compose exec api npm run test
 │   │   ├── cssDocs.ts
 │   │   └── response.interceptor.ts
 │   └── main.ts
+├── docs
+|    ├── Course Master [PROD].postman_collection.json
+|    └── Course Master [DEV].postman_collection.json
 ├── prisma
 │   └── schema.prisma
 ├── .env
@@ -302,9 +305,9 @@ Criei também um **usuário IAM** com permissões de acesso ao EC2, para que os 
 
 ## **Descrição das rotas da API**
 
-### **Documentação**
+## Documentação
 
-A documentação do swagger estará disponível no endpoint 
+A documentação do swagger estará disponível no endpoint. 
 
 ```bash
 http://localhost:3000/docs
@@ -314,6 +317,7 @@ Nela será possível:
 - Visualizar todos os endpoints
 - Testar cada rota diretamente
 - Ver esquemas e exemplos de request/response
+
 
 **Observação:** É necessário enviar o cabeçalho timezone (por exemplo, "America/Sao_Paulo") para ajustar as datas retornadas.
 
