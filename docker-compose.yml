@@ -23,7 +23,5 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
-    command: >
-      sh -c "npx prisma migrate dev --name 'init' && npm run start:dev"
 volumes:
   db_data:
