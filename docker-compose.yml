@@ -23,5 +23,7 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
+    command: >
+      ./wait-for-db.sh && sh -c "npx prisma migrate dev --name 'init' && npm run start:dev"
 volumes:
   db_data:
