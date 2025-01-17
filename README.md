@@ -1,12 +1,15 @@
 # Course Master
 
-Este projeto consiste em um sistema de gerenciamento de cursos, permitindo:
+Este projeto foi criado como parte de um teste técnico e consiste em um sistema básico de gerenciamento de cursos. Ele permite:
 - Cadastro de usuários
 - Cadastro de cursos
 - Matrícula de usuários em cursos
 - Consultas de usuários, cursos e matrículas
 
-Foi desenvolvido com **NestJS** e **Prisma**, usando **PostgreSQL** como banco de dados. Opcionalmente, pode ser executado com **Docker** para simplificar a configuração do ambiente.
+
+A aplicação foi desenvolvida com **NestJS** e **Prisma**, tendo o **PostgreSQL** como banco de dados. Também disponibilizei a opção de executar tudo em **Docker**, caso queira agilizar a configuração do ambiente sem instalar as dependências localmente.
+
+Em linhas gerais, o Course Master cobre funcionalidades cruciais para qualquer plataforma de ensino ou treinamento: a criação de contas, o gerenciamento de conteúdo e o registro das matrículas. Tudo isso, claro, organizado e pronto para ser testado pelos avaliadores durante o período estipulado.
 
 ---
 
@@ -18,7 +21,8 @@ Foi desenvolvido com **NestJS** e **Prisma**, usando **PostgreSQL** como banco d
    2. [Execução Manual (Sem Docker Compose)](#execução-manual-sem-docker-compose)  
    3. [Rodando Testes](#rodando-testes)  
 3. [Estrutura de Pastas](#estrutura-de-pastas)  
-4. [Descrição das Rotas da API](#descrição-das-rotas-da-api)  
+4. [Arquitetura e Deploy na AWS](#arquitetura-e-deploy-na-aws) 
+5. [Descrição das Rotas da API](#descrição-das-rotas-da-api)  
    1. [Documentação via Swagger](#documentação-via-swagger)  
    2. [Export do Postman](#export-do-postman)  
    3. [Endpoints Principais](#endpoints-principais)  
@@ -131,6 +135,7 @@ npm run start:prod
 
 A API estará acessível, por padrão, em http://localhost:3000.
 
+---
 
 ## ⚙️ Rodando Testes
 Para rodar todos os testes unitários, use:
@@ -161,6 +166,8 @@ Por exemplo:
 docker-compose exec api npm run test
 ```
 
+---
+
 ## 📦 Estrutura de Pastas
 ```
 .
@@ -187,16 +194,100 @@ docker-compose exec api npm run test
 │   ├── prisma
 │   │   └── prisma.service.ts
 │   ├── utils
-│   │   └── convertDateToTimeZone.ts
+│   │   ├── convertDateToTimeZone.ts
+│   │   ├── cssDocs.ts
+│   │   └── response.interceptor.ts
 │   └── main.ts
 ├── prisma
 │   └── schema.prisma
+├── .env
 ├── Dockerfile
 ├── docker-compose.yml
 ├── package.json
 ├── tsconfig.json
 └── README.md
 ```
+
+### Escolhas Técnicas para Estruturação
+- Modularização: Temos a pasta core onde fica o núcleo da aplicação (a regra de negócios), nela ficam os módulos das entidades. Cada módulo é isolado e contém todas as dependências relacionadas (controladores, serviços, DTOs, testes). Isso promove a separação de responsabilidades e facilita a escalabilidade.
+- Reutilização: Funções comuns, como conversão de data ou formatação de resposta, são centralizadas em utils, evitando duplicação de código.
+---
+
+## **Arquitetura e Deploy na AWS**
+
+Para demonstrar o funcionamento em ambiente real, realizei o deploy da aplicação na **AWS EC2**. Por simplicidade, subi **dois contêineres** (API e banco de dados) na mesma instância, usando **Docker Compose**. Em um cenário de produção, provavelmente optaria pelo **Amazon RDS** para o banco, mas aqui foi suficiente para fins de avaliação.
+
+Endereço público: http://ec2-100-27-205-85.compute-1.amazonaws.com:3000
+
+### 📦 Diagrama da arquitetura
+
+```sql
+┌─────────────────────────────────────────────────────────────┐
+│                          Usuário                            │
+│               (Postman, Front-end, etc.)                    │
+└─────────────────────────────────────────────────────────────┘
+               |                         ▲               
+               |  Requisições HTTP       |  Respostas    
+               ▼ (GET, POST, etc.)       |  
+┌─────────────────────────────────────────────────────────────┐
+│                  AWS EC2 Instance                           │
+│  (Ex.: ec2-100-27-205-85.compute-1.amazonaws.com:3000)      │
+│  - Docker Engine / Docker Compose                           │
+│                                                             │
+│  ┌───────────────────────────┐  ┌───────────────────────┐   │
+│  │ Container 1:              │  │ Container 2:          │   │
+│  │  NestJS API               │  │  PostgreSQL           │   │
+│  │  (node:18 + app)          │  │  (DB local p/ testes) │   │
+│  │    Modules:               │  │       DB: coursemaster│   │
+│  │      - UserModule         │  │       user, course,   │   │
+│  │      - CourseModule       │  │       enrollment tbls.│   │
+│  │      - EnrollmentModule   │  └───────────────────────┘   │
+│  │  (Prisma Client, etc.)    │                              │
+│  └───────────────────────────┘                              │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+       ▲                        
+       |   Conexão local via docker-compose 
+       ▼  
+┌─────────────────────────────────────────────────────────────┐
+│                      Banco de Dados                         │
+│        (Armazena user, course, enrollment, etc.)            │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Nesse diagrama:
+
+- Usuário: É quem faz requisições via Postman, navegador ou um front-end.
+- AWS EC2 Instance: Onde tudo roda. Você configurou Docker e subiu dois contêineres:
+  - Container 1: API NestJS:
+    - UserModule (lida com criação, listagem de usuários)
+    - CourseModule (lida com cursos)
+    - EnrollmentModule (lida com matrículas)
+    - Conecta-se ao banco de dados através do Prisma.
+  - Container 2: PostgreSQL.
+
+
+#### Observações
+- A porta **3000** está aberta para acesso público, de modo que qualquer um possa consumir a API de forma rápida.  
+- Em produção, deixaria o Postgres em **RDS** para um gerenciamento mais seguro e robusto.  
+
+### Usuário IAM para Visualização
+Criei também um **usuário IAM** com permissões de acesso ao EC2, para que os avaliadores possam:
+- Entrar no console da AWS
+- Verificar logs, status dos contêineres e tudo mais que esteja rodando na instância
+
+
+**Não incluirei esses dados de acesso no README, pois o repositório é público. Vou enviar essas credenciais de forma privada por email, junto com o link para a API em produção.**
+
+## Considerações Finais do Deploy
+
+- **Endereço da API**: A aplicação está acessível em `http://ec2-100-27-205-85.compute-1.amazonaws.com:3000`.  
+- **IAM User**: Será enviado por email, com permissões de gerenciamento no EC2, caso os avaliadores queiram conferir a instância, logs de contêiner etc.  
+- **Aviso de Segurança**: A porta 3000 está aberta propositalmente para facilitar testes. Em uso real, seria configurada uma política mais restrita e a comunicação com o banco ficaria em rede privada.  
+
+
+---
+
 ## **Descrição das rotas da API**
 
 ### **Documentação**
