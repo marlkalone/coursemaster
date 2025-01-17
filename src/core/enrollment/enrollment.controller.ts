@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Headers, Param } from '@nestjs/common';
 import { EnrollmentService } from './enrollment.service';
 import { CreateEnrollmentDto } from './dto/create-enrollment.dto';
-import { ApiHeader, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiHeader, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateEnrollmentApiResponseDto } from './dto/create-enrollment-response.dto';
 import { GetUserEnrollmentApiResponseDto } from './dto/get-user-enrollments-response.dto';
 
@@ -30,6 +30,15 @@ export class EnrollmentController {
     status: 201,
     description: 'Matricula um usuario em um curso',
     type: CreateEnrollmentApiResponseDto,
+  })
+  @ApiBody({
+    description: 'Corpo da requisição para matricular um usuário em um curso',
+    schema: {
+      example: {
+        user_id: 1,
+        course_id: 1,
+      },
+    },
   })
   @Post()
   async create(

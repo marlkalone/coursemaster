@@ -54,11 +54,18 @@ Em linhas gerais, o Course Master cobre funcionalidades cruciais para qualquer p
 
 ## Execução via Docker Compose
 
+### **Evite dar npm install ao utilizar o Docker para evitar possíveis problemas.**
+
 Caso queira rodar tudo (banco de dados e API) via contêineres Docker:
 
-  ### **1**. Instale Docker e docker-compose em sua máquina (caso ainda não tenha).
+  ### **1**. Clone o repositório:
+  ```bash
+  https://github.com/marlkalone/coursemaster.git
+  ```
 
-  ### **2**. No diretório do projeto, rode:
+  ### **2**. Instale Docker e docker-compose em sua máquina (caso ainda não tenha).
+
+  ### **3**. No diretório do projeto, rode:
   ```bash
   docker-compose up --build
   ```
@@ -66,12 +73,12 @@ Caso queira rodar tudo (banco de dados e API) via contêineres Docker:
   Isso fará o build da imagem da API (usando o Dockerfile presente) e subirá dois contêineres:
   - db (baseado em postgres:15)
   - api (nossa aplicação NestJS)
-  ### **3**. Após isso, rode o seguinte comando para aplicar as migrations no container:
+  ### **4**. Após isso, rode o seguinte comando para aplicar as migrations no container:
   ```bash
   docker-compose exec api npx prisma migrate dev
   ```
-  ### **4**. A aplicação NestJS, por padrão, ficará disponível em http://localhost:3000.
-  ### **5**. Para parar a execução:
+  ### **5**. A aplicação NestJS, por padrão, ficará disponível em http://localhost:3000.
+  ### **6**. Para parar a execução:
   ```bash
   docker-compose down
   ```
@@ -88,22 +95,27 @@ O serviço db mapeia a porta 5432 local para 5432 do contêiner, e a api mapeia 
 ## Execução manual (Sem Docker Compose)
 Se você não quiser usar Docker Compose e preferir rodar o projeto manualmente:
 
-**1. Crie um banco de dados no PostgreSQL (por exemplo, **coursemaster**).**
+### **1**. Clone o repositório:
+```bash
+https://github.com/marlkalone/coursemaster.git
+  ```
 
-**2. Configurar .env**
+### **2. Crie um banco de dados no PostgreSQL (por exemplo, **coursemaster**).**
+
+### **3. Configurar .env**
 
 Crie um arquivo .env na raiz contendo:
 ```bash
 DATABASE_URL="postgresql://<seu-usuario>:<sua-senha>@localhost:5432/<nome-do-banco>"
 ```
 
-**3. Certifique-se de que o serviço do PostgreSQL está rodando localmente ou remotamente, conforme configurado. Você pode verificar em alguma ferramenta visual, como PGAdmin, ou pelo comando a seguir:**
+### **4. Certifique-se de que o serviço do PostgreSQL está rodando localmente ou remotamente, conforme configurado. Você pode verificar em alguma ferramenta visual, como PGAdmin, ou pelo comando a seguir:**
 
 ```bash
 psql -U <usuario> -h <host> -p <porta>
 ```
 
-**4. Instalação de Dependências**
+### **5. Instalação de Dependências**
 
 No diretório raiz do projeto, rode:
 ```bash
@@ -115,13 +127,13 @@ ou
 yarn install
 ```
 
-**5. Executar Migrations**
+### **6. Executar Migrations**
 ```bash
 npx prisma migrate dev --name "init"
 ```
 Isso cria as tabelas no banco de dados.
 
-**6. Rodar a aplicação**
+### **7. Rodar a aplicação**
 
 Modo desenvolvimento (com live reload):
 ```bash

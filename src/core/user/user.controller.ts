@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ConflictException, Headers } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ApiHeader, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiHeader, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { FindByEmailDto } from './dto/find-by-email.dto';
 import { CreateUserApiResponseDto } from './dto/create-user-response.dto';
 import { GetUserResponseDto } from './dto/user-with-enrollments.response.dto';
@@ -32,6 +32,16 @@ export class UserController {
     status: 201,
     description: 'Cria um novo usuário com as informações enviadas',
     type: CreateUserApiResponseDto,
+  })
+  @ApiBody({
+    description: 'Corpo da requisição para criar um novo usuário',
+    schema: {
+      example: {
+        name: 'João da Silva',
+        email: 'joao.silva@example.com',
+        password: 'teste123',
+      },
+    },
   })
   @Post()
   async create(

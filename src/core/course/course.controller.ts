@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Headers } from '@nestjs/common';
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './dto/create-course.dto';
-import { ApiHeader, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBody, ApiHeader, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { GetCoursesApiResponseDto } from './dto/get-course-response.dto';
 import { CreateCourseApiResponseDto } from './dto/create-course-response.dto';
 
@@ -30,6 +30,17 @@ export class CourseController {
     status: 201,
     description: 'Matrícula criada com sucesso.',
     type: CreateCourseApiResponseDto,
+  })
+  @ApiBody({
+    description: 'Corpo da requisição para criar um novo curso',
+    schema: {
+      example: {
+        title: 'Curso Nodejs Avançado',
+        description: `Este curso avançado explora tópicos complexos do Node.js, como escalabilidade, clusters, streams, 
+        balanceamento de carga e otimização de desempenho.`,
+        hours: 60,
+      },
+    },
   })
   @Post()
   async create(
