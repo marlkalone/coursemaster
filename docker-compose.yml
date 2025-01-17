@@ -24,6 +24,10 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     command: >
-      ./wait-for-db.sh && sh -c "npx prisma migrate dev --name 'init' && npm run start:dev"
+      ./wait-for-db.sh && sh -c "
+      if [ $(npx prisma migrate status | grep 'Database is already up to date' | wc -l) -eq 0 ]; then
+        npx prisma migrate dev --name 'init';
+      fi
+      npm run start:dev"
 volumes:
   db_data:
