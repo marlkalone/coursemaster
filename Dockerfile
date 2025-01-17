@@ -20,6 +20,8 @@ RUN npm install
 
 COPY . .
 
+RUN npx prisma generate
+
 EXPOSE 5432 3000
 
 CMD service postgresql start && npm run dev
