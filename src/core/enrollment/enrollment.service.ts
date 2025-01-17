@@ -26,60 +26,72 @@ export class EnrollmentService {
       data: {
         user_id: user_id,
         course_id: course_id,
-      },
+      }, include: { course: true, user: true },
     });
 
+    const enrollmentDate = convertDateToTimeZone(enrollmentdb.enrolled_at, clientTimeZone);
+    const userCreatedAt = convertDateToTimeZone(enrollmentdb.user.created_at, clientTimeZone);
+    const courseCreatedAt = convertDateToTimeZone(enrollmentdb.course.created_at, clientTimeZone);
+
     const enrollment = {
-      ...enrollmentdb,
-      enrolled_at: await convertDateToTimeZone(enrollmentdb.enrolled_at, 'America/Sao_Paulo'),
-    }
+      enrollment: {
+        id: enrollmentdb.id,
+        enrolled_at: enrollmentDate,
+        user: {
+          id: enrollmentdb.user.id,
+          name: enrollmentdb.user.name,
+          email: enrollmentdb.user.email,
+          created_at: userCreatedAt,
+        },
+        course: {
+          id: enrollmentdb.course.id,
+          title: enrollmentdb.course.title,
+          description: enrollmentdb.course.description,
+          hours: enrollmentdb.course.hours,
+          created_at: courseCreatedAt,
+        },
+      },
+    };
 
     return enrollment;
   }
 
-  async findByUser(userId: number, clientTimeZone: string): Promise<UserEnrollments[] | {}> {
+  async findByUser(user_id: number, clientTimeZone: string): Promise<UserEnrollments[] | {}> {
 
-    const enrollmentsdb = await this.prisma.user.findMany({
+    const enrollmentsDb = await this.prisma.enrollment.findMany({
+      where: { user_id },
       include: { 
-        enrollments: { 
-          include: { 
-            course: true 
-          } 
-        } 
+        course: true, 
+        user: true
       },
-      where: { id: userId },
     });
 
-    const enrollmentsdb2 = await this.prisma.enrollment.findMany({
-      where: { id: userId },
-      include: { course: true }
-    });
-
-    const enrollments = enrollmentsdb.map((user) => {
-      const userCreatedAt = convertDateToTimeZone(user.created_at, clientTimeZone);
-
-      const enrollments = user.enrollments.map((en) => {
-        
-        const enrollmentDate = convertDateToTimeZone(en.enrolled_at, clientTimeZone);
-        const courseDate = convertDateToTimeZone(en.course.created_at, clientTimeZone);
-
-        return {
-          ...en,
-          enrolled_at: enrollmentDate,
-          course: {
-            ...en.course,
-            created_at: courseDate,
-          },
-        };
-      });
-
+    const enrollments = enrollmentsDb.map((enrollment) => {
+      const enrollmentDate = convertDateToTimeZone(enrollment.enrolled_at, clientTimeZone);
+      const userCreatedAt = convertDateToTimeZone(enrollment.user.created_at, clientTimeZone);
+      const courseCreatedAt = convertDateToTimeZone(enrollment.course.created_at, clientTimeZone);
+  
       return {
-        ...user,
-        created_at: userCreatedAt,
-        enrollments,
+        enrollment: {
+          id: enrollment.id,
+          enrolled_at: enrollmentDate,
+          user: {
+            id: enrollment.user.id,
+            name: enrollment.user.name,
+            email: enrollment.user.email,
+            created_at: userCreatedAt,
+          },
+          course: {
+            id: enrollment.course.id,
+            title: enrollment.course.title,
+            description: enrollment.course.description,
+            hours: enrollment.course.hours,
+            created_at: courseCreatedAt,
+          }
+        }
       };
     });
-
+  
     return enrollments;
   }
 }

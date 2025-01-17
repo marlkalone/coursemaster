@@ -24,27 +24,54 @@ export class UserService {
     const date = await convertDateToTimeZone(userdb.created_at, clientTimeZone);
 
     const user = {
-      usuario: userdb.id,
+      id: userdb.id,
       email: userdb.email,
-      criado_em: date,
+      name: userdb.name,
+      created_at: date,
     }
 
     return user;
   }
 
   async findOne(id: number, clientTimeZone: string): Promise<{} | null>{
-    const userdb = await this.prisma.user.findUnique({ where: { id } }) as User;
+    const userdb = await this.prisma.user.findUnique({ 
+      where: { id }, 
+      include: { 
+        enrollments: { 
+          include: { 
+            course: true 
+          } 
+        } 
+      },
+      omit: { password: true } 
+      //Por segurança, as senhas são omitidas
+    });
 
     if(!userdb) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+      throw new NotFoundException(`Usuário com o ID ${id} não encontrado`);
     }
 
-    const user = {
+    const userCreatedAt = convertDateToTimeZone(userdb.created_at, clientTimeZone);
+
+    const enrollments = userdb.enrollments.map((enrollment) => {
+      const enrollmentDate = convertDateToTimeZone(enrollment.enrolled_at, clientTimeZone);
+      const courseCreatedAt = convertDateToTimeZone(enrollment.course.created_at, clientTimeZone);
+
+      return {
+        ...enrollment,
+        enrolled_at: enrollmentDate,
+        course: {
+          ...enrollment.course,
+          created_at: courseCreatedAt,
+        },
+      };
+    });
+
+    return {
       ...userdb,
-      created_at: await convertDateToTimeZone(userdb.created_at, clientTimeZone)
-    }
-
-    return user;
+      created_at: userCreatedAt,
+      enrollments,
+    };
   }
 
   async findByEmail(findByEmail: FindByEmailDto): Promise<User | void>  {

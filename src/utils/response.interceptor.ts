@@ -15,15 +15,6 @@ export class TransformInterceptor implements NestInterceptor {
         };
       }),
       catchError((err) => {
-        if (
-          err instanceof PrismaClientKnownRequestError ||
-          err instanceof PrismaClientInitializationError ||
-          err instanceof PrismaClientRustPanicError
-        ) {
-          // Re-lança a exceção para ser tratada pelo PrismaExceptionFilter
-          return throwError(() => err);
-        }
-
         const status = err.getStatus ? err.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
         return throwError(() => new HttpException({
           message: err.response?.message || err.message || 'Erro inesperado ocorreu',

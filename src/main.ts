@@ -14,6 +14,7 @@ async function bootstrap() {
   .setTitle('Course Master API')
   .setDescription('Documentação da API')
   .setVersion('0.0.1')
+  .addServer('/', 'Local API Server')
   .build();
   const document = SwaggerModule.createDocument(app, config);
 

@@ -17,11 +17,9 @@ export class CreateUserDto {
     readonly email: string;
 
     @IsString()
-    @MinLength(8)
-    @MaxLength(20)
-    @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[a-z]).*$/, {
-        message: 'Password too weak. Must contain at least one lowercase letter, one number or one special character',
-    })
+    @MinLength(5, { message: 'A senha deve ter ao menos 5 caractéres' })
+    @MaxLength(20, { message: 'A senha deve ter no máximo 20 caractéres' })
+    @Matches(/^.*$/)
     readonly password: string;
     
 }
