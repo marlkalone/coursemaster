@@ -312,6 +312,7 @@ Nela será possível:
 #### **Descrição: Cria um novo usuário com nome, email, senha e registra o horário de criação.**
 
 **Exemplo de cabeçalho:**
+
 ```json
 Headers: { "timezone": "America/Sao_Paulo" }
 ```
@@ -630,8 +631,8 @@ Mesmo sem uma autenticação completa implementada neste projeto, preocupo-me em
 
 Algumas medidas tomadas são:
 
-    - Filtragem de Dados: O campo password é explicitamente excluído nos serviços.
-    - Intercepção Global: O TransformInterceptor formata as respostas e não inclui informações não autorizadas.
+  - Filtragem de Dados: O campo password é explicitamente excluído nos serviços.
+  - Intercepção Global: O TransformInterceptor formata as respostas e não inclui informações não autorizadas.
 
 - **Exemplo:**
 Mesmo que o usuário seja retornado na resposta, o campo password nunca será incluído:
