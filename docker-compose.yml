@@ -24,9 +24,6 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     command: >
-      sh -c "
-      npx prisma migrate dev &&
-      npm run start:dev
-      "
+      npm run dev
 volumes:
   db_data:
