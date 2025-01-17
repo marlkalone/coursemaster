@@ -3,8 +3,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../../prisma/prisma.service';
 import { FindByEmailDto } from './dto/find-by-email.dto';
-import { User } from '@prisma/client';
 import { convertDateToTimeZone } from '../../utils/convertDateToTimeZone';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -17,15 +17,15 @@ export class UserService {
       password: await this.hashPassword(createUserDto.password),
     }
 
-    const usuario = await this.prisma.user.create({
+    const userdb = await this.prisma.user.create({
       data,
     }) as User;
 
-    const date = await convertDateToTimeZone(usuario.created_at, clientTimeZone);
+    const date = await convertDateToTimeZone(userdb.created_at, clientTimeZone);
 
     const user = {
-      usuario: usuario.id,
-      email: usuario.email,
+      usuario: userdb.id,
+      email: userdb.email,
       criado_em: date,
     }
 

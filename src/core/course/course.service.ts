@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCourseDto } from './dto/create-course.dto';
 import { PrismaService } from '../../prisma/prisma.service';
-import { Course } from '@prisma/client';
 import { convertDateToTimeZone } from '../../utils/convertDateToTimeZone';
+import { Course } from './entities/course.entity';
 
 @Injectable()
 export class CourseService {
@@ -12,7 +12,7 @@ export class CourseService {
     const coursedb = await this.prisma.course.create({
       data: createCourseDto,
     }) as Course;
-
+    
     const date = await convertDateToTimeZone(coursedb.created_at, clientTimeZone);
 
     const course = {

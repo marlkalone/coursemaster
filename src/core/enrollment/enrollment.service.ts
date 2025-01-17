@@ -80,6 +80,6 @@ export class EnrollmentService {
       };
     });
 
-    return enrollmentsdb2;
+    return enrollments;
   }
 }
