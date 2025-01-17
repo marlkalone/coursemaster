@@ -4,5 +4,5 @@ until pg_isready -h db -p 5432 -U admin; do
   sleep 2
 done
 
-echo "Banco de dados pronto. Iniciando a aplicação..."
+echo "Banco de dados pronto!"
 exec "$@"
